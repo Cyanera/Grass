@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-thmanyah), "Geeza Pro", "Segoe UI", serif;
+
+  /* لوحة pastel هادئة ودافئة */
+  --color-cream: #fbf7ef;
+  --color-sand: #f4ecdf;
+  --color-leaf: #8caf97;
+  --color-leaf-deep: #5f8a6e;
+  --color-leaf-soft: #e3ece4;
+  --color-blossom: #eec9c5;
+  --color-blossom-soft: #f9efec;
+  --color-ink: #4b4237;
+  --color-ink-soft: #857a6c;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+}
+
+/* عند الطباعة: تُطبع القصة فقط */
+@media print {
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-card {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
