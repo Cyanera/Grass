@@ -58,9 +58,12 @@ export async function generateStory(req: StoryRequest): Promise<Story> {
 - القيمة المراد تعزيزها: ${req.value}
 ${req.details ? `- تفاصيل إضافية من الأهل: ${req.details}` : ""}`;
 
+  // نماذج gpt-5 و o-series لا تقبل درجة حرارة مخصصة
+  const supportsTemperature = !/^(gpt-5|o\d)/.test(TEXT_MODEL);
+
   const completion = await client.chat.completions.create({
     model: TEXT_MODEL,
-    temperature: 0.9,
+    ...(supportsTemperature ? { temperature: 0.9 } : {}),
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: systemPrompt },
