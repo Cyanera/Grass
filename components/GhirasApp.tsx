@@ -12,6 +12,16 @@ const AGE_LABELS: Record<AgeGroup, string> = {
   "7-8": "٧–٨ سنوات",
 };
 
+/* تناوب ألوان الهوية الثلاثة على الخيارات */
+const GOLD = { on: "border-gold bg-gold text-ink font-bold", off: "bg-white border-gold/60 hover:bg-gold/15" };
+const BLUE = { on: "border-blue-deep bg-blue-deep text-white font-bold", off: "bg-white border-blue/50 hover:bg-blue/10" };
+const ROSE = { on: "border-rose-deep bg-rose-deep text-white font-bold", off: "bg-white border-rose/50 hover:bg-rose/10" };
+
+const VALUE_STYLES = [GOLD, BLUE, ROSE, GOLD, BLUE, ROSE, GOLD, BLUE];
+const AGE_STYLES = [GOLD, BLUE, ROSE];
+
+const CUSTOM = "__custom__";
+
 async function postJson<T>(url: string, body: unknown): Promise<T> {
   const res = await fetch(url, {
     method: "POST",
@@ -26,8 +36,6 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
   }
   return data as T;
 }
-
-const CUSTOM = "__custom__";
 
 export default function GhirasApp() {
   const [heroName, setHeroName] = useState("");
@@ -47,6 +55,8 @@ export default function GhirasApp() {
   const [copied, setCopied] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
+  const effectiveValue = value === CUSTOM ? customValue.trim() : value;
+
   async function loadImage(imagePrompt: string) {
     setImage(null);
     setImageError(null);
@@ -62,8 +72,6 @@ export default function GhirasApp() {
       setImageLoading(false);
     }
   }
-
-  const effectiveValue = value === CUSTOM ? customValue.trim() : value;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -124,10 +132,10 @@ export default function GhirasApp() {
       {/* النموذج */}
       <form
         onSubmit={handleSubmit}
-        className="mx-auto flex w-full max-w-xl flex-col gap-6 rounded-3xl border-2 border-sand bg-white p-6 shadow-[0_12px_40px_-16px_rgba(30,107,78,0.3)] sm:p-8"
+        className="mx-auto flex w-full max-w-xl flex-col gap-6 rounded-3xl border border-line bg-white p-6 shadow-[0_14px_44px_-18px_rgba(42,37,48,0.22)] sm:p-8"
       >
         <div className="flex flex-col gap-2">
-          <label htmlFor="heroName" className="font-medium">
+          <label htmlFor="heroName" className="font-bold">
             اسم بطل القصة
           </label>
           <input
@@ -138,20 +146,18 @@ export default function GhirasApp() {
             required
             maxLength={40}
             placeholder="مثال: سارة، حمد…"
-            className="rounded-2xl border border-sand bg-cream px-4 py-3 outline-none transition placeholder:text-ink-soft/60 focus:border-leaf focus:bg-white"
+            className="rounded-2xl border border-line bg-page px-4 py-3 outline-none transition placeholder:text-ink-soft/50 focus:border-blue focus:bg-white"
           />
         </div>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 font-medium">عمر الطفل</legend>
+          <legend className="mb-2 font-bold">عمر الطفل</legend>
           <div className="flex flex-wrap gap-2">
-            {AGE_GROUPS.map((age) => (
+            {AGE_GROUPS.map((age, i) => (
               <label
                 key={age}
-                className={`cursor-pointer rounded-full border px-5 py-2 transition ${
-                  ageGroup === age
-                    ? "border-leaf-deep bg-leaf-deep font-bold text-white"
-                    : "border-sand bg-cream hover:border-leaf"
+                className={`cursor-pointer rounded-full border-2 px-5 py-2 font-medium transition ${
+                  ageGroup === age ? AGE_STYLES[i].on : AGE_STYLES[i].off
                 }`}
               >
                 <input
@@ -170,15 +176,13 @@ export default function GhirasApp() {
         </fieldset>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 font-medium">القيمة التي نغرسها اليوم</legend>
+          <legend className="mb-2 font-bold">القيمة التي نغرسها اليوم</legend>
           <div className="flex flex-wrap gap-2">
-            {VALUES.map((v) => (
+            {VALUES.map((v, i) => (
               <label
                 key={v}
-                className={`cursor-pointer rounded-full border px-4 py-2 text-sm transition sm:text-base ${
-                  value === v
-                    ? "border-leaf-deep bg-leaf-deep font-bold text-white"
-                    : "border-sand bg-cream hover:border-leaf"
+                className={`cursor-pointer rounded-full border-2 px-4 py-2 text-sm font-medium transition sm:text-base ${
+                  value === v ? VALUE_STYLES[i].on : VALUE_STYLES[i].off
                 }`}
               >
                 <input
@@ -194,10 +198,10 @@ export default function GhirasApp() {
               </label>
             ))}
             <label
-              className={`cursor-pointer rounded-full border border-dashed px-4 py-2 text-sm transition sm:text-base ${
+              className={`cursor-pointer rounded-full border-2 border-dashed px-4 py-2 text-sm font-medium transition sm:text-base ${
                 value === CUSTOM
-                  ? "border-leaf-deep bg-leaf-deep font-bold text-white"
-                  : "border-ink-soft/40 bg-cream hover:border-leaf"
+                  ? "border-blue-deep bg-blue-deep font-bold text-white"
+                  : "bg-white border-ink-soft/40 hover:border-blue hover:bg-blue/10"
               }`}
             >
               <input
@@ -219,14 +223,14 @@ export default function GhirasApp() {
               maxLength={30}
               autoFocus
               placeholder="اكتبي القيمة… مثال: بر الوالدين، حب القراءة"
-              className="mt-1 rounded-2xl border border-sand bg-cream px-4 py-3 outline-none transition placeholder:text-ink-soft/60 focus:border-leaf focus:bg-white"
+              className="mt-1 rounded-2xl border border-line bg-page px-4 py-3 outline-none transition placeholder:text-ink-soft/50 focus:border-blue focus:bg-white"
             />
           )}
         </fieldset>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="details" className="font-medium">
-            تفاصيل إضافية <span className="text-sm text-ink-soft">(اختياري)</span>
+          <label htmlFor="details" className="font-bold">
+            تفاصيل إضافية <span className="text-sm font-normal text-ink-soft">(اختياري)</span>
           </label>
           <textarea
             id="details"
@@ -235,14 +239,14 @@ export default function GhirasApp() {
             maxLength={400}
             rows={2}
             placeholder="مثال: يحب القطط، القصة في المدرسة، نهاية سعيدة…"
-            className="resize-none rounded-2xl border border-sand bg-cream px-4 py-3 outline-none transition placeholder:text-ink-soft/60 focus:border-leaf focus:bg-white"
+            className="resize-none rounded-2xl border border-line bg-page px-4 py-3 outline-none transition placeholder:text-ink-soft/50 focus:border-blue focus:bg-white"
           />
         </div>
 
         <button
           type="submit"
           disabled={!canSubmit}
-          className="flex items-center justify-center gap-3 rounded-full bg-leaf-deep px-6 py-4 text-lg font-bold text-white transition hover:bg-leaf disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-gradient flex items-center justify-center gap-3 rounded-full px-6 py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {storyLoading ? (
             <>
@@ -255,7 +259,7 @@ export default function GhirasApp() {
         </button>
 
         {storyError && (
-          <p role="alert" className="rounded-2xl bg-blossom-soft px-4 py-3 text-center">
+          <p role="alert" className="rounded-2xl bg-red-soft px-4 py-3 text-center">
             {storyError}
           </p>
         )}
@@ -265,14 +269,14 @@ export default function GhirasApp() {
       {story && (
         <div
           ref={resultRef}
-          className="mx-auto mt-10 flex w-full max-w-2xl scroll-mt-6 flex-col gap-6 rounded-3xl border-2 border-sand bg-white p-6 shadow-[0_12px_40px_-16px_rgba(30,107,78,0.3)] sm:p-10"
+          className="mx-auto mt-10 flex w-full max-w-2xl scroll-mt-6 flex-col gap-6 rounded-3xl border border-line bg-white p-6 shadow-[0_14px_44px_-18px_rgba(42,37,48,0.22)] sm:p-10"
         >
-          <h2 className="font-display text-center text-3xl font-black text-leaf-deep sm:text-4xl">
+          <h2 className="text-center text-3xl font-black text-ink sm:text-4xl">
             {story.title}
           </h2>
 
           {/* الصورة */}
-          <div className="overflow-hidden rounded-3xl bg-leaf-soft">
+          <div className="overflow-hidden rounded-3xl bg-blue-soft">
             {image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -281,9 +285,9 @@ export default function GhirasApp() {
                 className="aspect-[3/2] w-full object-cover"
               />
             ) : imageLoading ? (
-              <div className="flex aspect-[3/2] w-full animate-pulse flex-col items-center justify-center gap-3 text-leaf-deep">
+              <div className="flex aspect-[3/2] w-full animate-pulse flex-col items-center justify-center gap-3 text-blue-deep">
                 <Spinner large />
-                <span>نرسم المشهد…</span>
+                <span className="font-medium">نرسم المشهد…</span>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
@@ -291,7 +295,7 @@ export default function GhirasApp() {
                 <button
                   type="button"
                   onClick={() => loadImage(story.image_prompt)}
-                  className="rounded-full border border-leaf-deep px-5 py-2 text-leaf-deep transition hover:bg-leaf hover:text-white"
+                  className="rounded-full border-2 border-blue px-5 py-2 font-medium text-blue-deep transition hover:bg-blue hover:text-white"
                 >
                   أعد توليد الصورة
                 </button>
@@ -299,14 +303,14 @@ export default function GhirasApp() {
             )}
           </div>
 
-          <div className="font-text flex flex-col gap-4 text-lg leading-loose">
+          <div className="flex flex-col gap-4 text-lg leading-loose">
             {story.story.split(/\n+/).map(
               (paragraph, i) =>
                 paragraph.trim() && <p key={i}>{paragraph.trim()}</p>
             )}
           </div>
 
-          <p className="font-text rounded-2xl bg-sun-soft px-5 py-4 text-center text-leaf-deep">
+          <p className="rounded-2xl bg-gold-soft px-5 py-4 text-center font-medium">
             {story.moral}
           </p>
 
@@ -347,10 +351,10 @@ function ActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-full px-5 py-2.5 transition disabled:cursor-not-allowed disabled:opacity-50 ${
+      className={`rounded-full px-5 py-2.5 font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
         primary
-          ? "bg-leaf-deep text-white hover:bg-leaf"
-          : "border border-sand bg-cream hover:border-leaf"
+          ? "btn-gradient text-white"
+          : "border border-line bg-white hover:border-blue"
       }`}
     >
       {children}

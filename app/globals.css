@@ -1,28 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  /* النظام الطباعي الثلاثي لخط ثمانية:
-     Sans للواجهة، Serif Text لنصوص القصص، Serif Display للعناوين */
-  --font-sans: var(--font-thmanyah-sans), "Segoe UI", system-ui, sans-serif;
-  --font-text: var(--font-thmanyah-text), "Geeza Pro", serif;
-  --font-display: var(--font-thmanyah-display), "Geeza Pro", serif;
+  /* خط مدوّر مرح لكل الواجهة */
+  --font-sans: var(--font-baloo), "Segoe UI", system-ui, sans-serif;
 
-  /* لوحة طفولية مبهجة بتباين واضح */
-  --color-cream: #fff9ee;
-  --color-sand: #f0e4cd;
-  --color-leaf: #3fa372;
-  --color-leaf-deep: #1e6b4e;
-  --color-leaf-soft: #ddf2e3;
-  --color-sun: #ffc94d;
-  --color-sun-soft: #fff1cf;
-  --color-coral: #ff8a5c;
-  --color-coral-soft: #ffe8dc;
-  --color-sky: #6fbede;
-  --color-ink: #2e2a23;
-  --color-ink-soft: #6e6455;
+  /* لوحة الألوان الثلاثية: ذهبي دافئ، أزرق، وردي */
+  --color-page: #fffdf8;
+  --color-ink: #33414f;
+  --color-ink-soft: #7f8a95;
+  --color-line: #efe8dc;
+
+  --color-gold: #f2c46d;
+  --color-gold-soft: #fcf0d6;
+  --color-blue: #5fa9d6;
+  --color-blue-deep: #3d8abd;
+  --color-blue-soft: #e7f2fa;
+  --color-rose: #e795aa;
+  --color-rose-deep: #d5758f;
+  --color-rose-soft: #fbe9ee;
+  --color-red-soft: #ffe3e3;
 }
 
 body {
-  background-color: var(--color-cream);
+  background-color: var(--color-page);
   color: var(--color-ink);
+}
+
+/* زر التوليد الرئيسي: تدرج من الأزرق إلى الوردي */
+.btn-gradient {
+  background-image: linear-gradient(135deg, var(--color-blue) 0%, var(--color-rose) 100%);
+  transition: filter 0.15s, opacity 0.15s;
+}
+.btn-gradient:hover:not(:disabled) {
+  filter: brightness(1.06) saturate(1.08);
 }
