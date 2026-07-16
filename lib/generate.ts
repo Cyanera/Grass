@@ -3,6 +3,8 @@ import { storySchema, type Story, type StoryRequest } from "./schema";
 
 const TEXT_MODEL = process.env.OPENAI_TEXT_MODEL ?? "gpt-4o-mini";
 const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? "gpt-image-1";
+// medium = توازن جيد بين السرعة والجودة؛ يمكن رفعها إلى high من متغيرات البيئة
+const IMAGE_QUALITY = process.env.OPENAI_IMAGE_QUALITY ?? "medium";
 
 function getClient(): OpenAI {
   if (!process.env.OPENAI_API_KEY) {
@@ -84,8 +86,8 @@ export async function generateImage(imagePrompt: string): Promise<string> {
     n: 1,
     // نماذج dall-e تحتاج طلب b64 صراحةً، بينما gpt-image-1 يعيده افتراضيًا
     ...(isDalle
-      ? { response_format: "b64_json" as const, quality: "hd" as const }
-      : { quality: "high" as const }),
+      ? { response_format: "b64_json" as const }
+      : { quality: IMAGE_QUALITY as "low" | "medium" | "high" }),
   });
 
   const item = result.data?.[0];
