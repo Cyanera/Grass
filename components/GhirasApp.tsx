@@ -124,7 +124,7 @@ export default function GhirasApp() {
       {/* النموذج */}
       <form
         onSubmit={handleSubmit}
-        className="no-print mx-auto flex w-full max-w-xl flex-col gap-6 rounded-3xl border border-sand bg-white/80 p-6 shadow-[0_10px_40px_-15px_rgba(95,138,110,0.25)] sm:p-8"
+        className="mx-auto flex w-full max-w-xl flex-col gap-6 rounded-3xl border-2 border-sand bg-white p-6 shadow-[0_12px_40px_-16px_rgba(30,107,78,0.3)] sm:p-8"
       >
         <div className="flex flex-col gap-2">
           <label htmlFor="heroName" className="font-medium">
@@ -265,9 +265,9 @@ export default function GhirasApp() {
       {story && (
         <div
           ref={resultRef}
-          className="print-card mx-auto mt-10 flex w-full max-w-2xl scroll-mt-6 flex-col gap-6 rounded-3xl border border-sand bg-white/90 p-6 shadow-[0_10px_40px_-15px_rgba(95,138,110,0.25)] sm:p-10"
+          className="mx-auto mt-10 flex w-full max-w-2xl scroll-mt-6 flex-col gap-6 rounded-3xl border-2 border-sand bg-white p-6 shadow-[0_12px_40px_-16px_rgba(30,107,78,0.3)] sm:p-10"
         >
-          <h2 className="text-center text-3xl font-black text-leaf-deep sm:text-4xl">
+          <h2 className="font-display text-center text-3xl font-black text-leaf-deep sm:text-4xl">
             {story.title}
           </h2>
 
@@ -286,7 +286,7 @@ export default function GhirasApp() {
                 <span>نرسم المشهد…</span>
               </div>
             ) : (
-              <div className="no-print flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
+              <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
                 <span className="text-ink-soft">{imageError ?? "الصورة غير متوفرة."}</span>
                 <button
                   type="button"
@@ -299,19 +299,19 @@ export default function GhirasApp() {
             )}
           </div>
 
-          <div className="flex flex-col gap-4 text-lg leading-loose">
+          <div className="font-text flex flex-col gap-4 text-lg leading-loose">
             {story.story.split(/\n+/).map(
               (paragraph, i) =>
                 paragraph.trim() && <p key={i}>{paragraph.trim()}</p>
             )}
           </div>
 
-          <p className="rounded-2xl bg-leaf-soft px-5 py-4 text-center text-leaf-deep">
+          <p className="font-text rounded-2xl bg-sun-soft px-5 py-4 text-center text-leaf-deep">
             {story.moral}
           </p>
 
           {/* الأزرار */}
-          <div className="no-print flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <ActionButton onClick={copyStory}>
               {copied ? "تم النسخ ✓" : "انسخ القصة"}
             </ActionButton>
@@ -321,7 +321,6 @@ export default function GhirasApp() {
             >
               أعد توليد الصورة
             </ActionButton>
-            <ActionButton onClick={() => window.print()}>اطبع</ActionButton>
             <ActionButton onClick={resetAll} primary>
               أنشئ قصة جديدة
             </ActionButton>

@@ -1,35 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-thmanyah), "Geeza Pro", "Segoe UI", serif;
+  /* النظام الطباعي الثلاثي لخط ثمانية:
+     Sans للواجهة، Serif Text لنصوص القصص، Serif Display للعناوين */
+  --font-sans: var(--font-thmanyah-sans), "Segoe UI", system-ui, sans-serif;
+  --font-text: var(--font-thmanyah-text), "Geeza Pro", serif;
+  --font-display: var(--font-thmanyah-display), "Geeza Pro", serif;
 
-  /* لوحة pastel هادئة ودافئة */
-  --color-cream: #fbf7ef;
-  --color-sand: #f4ecdf;
-  --color-leaf: #8caf97;
-  --color-leaf-deep: #5f8a6e;
-  --color-leaf-soft: #e3ece4;
-  --color-blossom: #eec9c5;
-  --color-blossom-soft: #f9efec;
-  --color-ink: #4b4237;
-  --color-ink-soft: #857a6c;
+  /* لوحة طفولية مبهجة بتباين واضح */
+  --color-cream: #fff9ee;
+  --color-sand: #f0e4cd;
+  --color-leaf: #3fa372;
+  --color-leaf-deep: #1e6b4e;
+  --color-leaf-soft: #ddf2e3;
+  --color-sun: #ffc94d;
+  --color-sun-soft: #fff1cf;
+  --color-coral: #ff8a5c;
+  --color-coral-soft: #ffe8dc;
+  --color-sky: #6fbede;
+  --color-ink: #2e2a23;
+  --color-ink-soft: #6e6455;
 }
 
 body {
   background-color: var(--color-cream);
   color: var(--color-ink);
-}
-
-/* عند الطباعة: تُطبع القصة فقط */
-@media print {
-  body {
-    background: #fff;
-  }
-  .no-print {
-    display: none !important;
-  }
-  .print-card {
-    box-shadow: none !important;
-    border: none !important;
-  }
 }
