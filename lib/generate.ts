@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { storySchema, type Story, type StoryRequest } from "./schema";
 
-const TEXT_MODEL = process.env.OPENAI_TEXT_MODEL ?? "gpt-4o-mini";
+const TEXT_MODEL = process.env.OPENAI_TEXT_MODEL ?? "gpt-5.1";
 const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? "gpt-image-1";
 // medium = توازن جيد بين السرعة والجودة؛ يمكن رفعها إلى high من متغيرات البيئة
 const IMAGE_QUALITY = process.env.OPENAI_IMAGE_QUALITY ?? "medium";
