@@ -18,6 +18,7 @@ export const VALUES = [
   "التواضع",
   "الكرم",
   "العفو",
+  "إتقان العمل",
 ] as const;
 
 export const storyRequestSchema = z.object({
