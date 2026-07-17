@@ -108,13 +108,12 @@ ${req.details ? `- تفاصيل إضافية من الأهل: ${req.details}` : 
 }
 
 const IMAGE_STYLE =
-  "A delightful cartoon-style illustration for a children's picture book, with soft watercolor " +
-  "and gouache-like textures, warm gentle lighting, and a soothing pastel palette. Feature adorable " +
-  "stylized characters with big kind eyes, rounded silhouettes, expressive faces, and charming playful " +
-  "poses. Emphasize a clean cartoon look with readable shapes, subtle outlines, and a whimsical, " +
-  "child-friendly feel, while preserving the elegance of a premium picture-book illustration. " +
-  "Use a layered composition with a clear focal point and soft background depth. " +
-  "Absolutely no text, no words, no letters, no captions anywhere in the image.";
+  "A delightful digital cartoon illustration for a children's picture book. Use a clean, polished " +
+  "digital art style with soft shading, warm gentle lighting, and a rich yet calm pastel color palette. " +
+  "Feature adorable stylized characters with big kind eyes, rounded shapes, expressive faces, and " +
+  "charming playful poses. Emphasize a clear cartoon look with smooth finishes, readable forms, and a " +
+  "whimsical, child-friendly feel. Create a layered storybook composition with a strong focal point and " +
+  "lovely background depth. Absolutely no text, no words, no letters, no captions anywhere in the image.";
 
 export async function generateImage(imagePrompt: string): Promise<string> {
   const client = getClient();
