@@ -30,15 +30,37 @@ export const storyRequestSchema = z.object({
 
 export type StoryRequest = z.infer<typeof storyRequestSchema>;
 
-export const storySchema = z.object({
+// مخرجات النموذج الخام (قبل التحقق من الاستشهادات)
+export const storyModelSchema = z.object({
   title: z.string().min(1),
   story: z.string().min(1),
   moral: z.string().min(1),
   key_scene: z.string().min(1),
   image_prompt: z.string().min(1),
+  // نص الآية المستشهد بها حرفيًا كما وردت في القصة (فارغ إن لم تُستخدم آية)
+  quran_ayah: z.string().default(""),
+  // نص الحديث المستشهد به حرفيًا كما ورد في القصة (فارغ إن لم يُستخدم حديث)
+  hadith: z.string().default(""),
 });
 
-export type Story = z.infer<typeof storySchema>;
+export type StoryModel = z.infer<typeof storyModelSchema>;
+
+// مرجع مُحقّق يُعرض في هامش القصة
+export type Citation = {
+  kind: "quran" | "hadith";
+  text: string; // نص الآية أو الحديث
+  reference: string; // «سورة البقرة: 153» أو «رواه البخاري (رقم 1)»
+};
+
+// القصة النهائية المُعادة للواجهة (بعد التحقق)
+export type Story = {
+  title: string;
+  story: string;
+  moral: string;
+  key_scene: string;
+  image_prompt: string;
+  citations: Citation[];
+};
 
 export const imageRequestSchema = z.object({
   image_prompt: z.string().trim().min(1).max(2000),

@@ -1,6 +1,13 @@
 import OpenAI from "openai";
-import { storySchema, type Story, type StoryRequest } from "./schema";
+import {
+  storyModelSchema,
+  type Citation,
+  type Story,
+  type StoryRequest,
+} from "./schema";
 import { buildReferenceBlock } from "./references";
+import { verifyVerse } from "./quran";
+import { verifyHadith } from "./hadith";
 
 const TEXT_MODEL = process.env.OPENAI_TEXT_MODEL ?? "gpt-5.1";
 const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? "gpt-image-1";
@@ -36,17 +43,18 @@ export async function generateStory(req: StoryRequest): Promise<Story> {
 
 اجعل التربية في القصة مستلهمة من الهدي النبوي في الرحمة والرفق والحوار والقدوة واحترام مشاعر الطفل، دون تخويف أو إهانة أو إشعاره بأنه طفل سيئ عند الخطأ.
 
-ضمّن في القصة آية قرآنية قصيرة وحديثًا نبويًا صحيحًا يرتبطان بالقيمة بصورة طبيعية وغير متكلفة. عند ذكر الحديث قل: «قال رسول الله ﷺ».
+ضمّن في القصة آيةً قرآنية قصيرة وحديثًا نبويًا صحيحًا يرتبطان بالقيمة بصورة طبيعية وغير متكلفة. عند ذكر الحديث قل: «قال رسول الله ﷺ».
 
 استخدم عربية فصحى سهلة وجميلة، وحوارًا طبيعيًا، وصورًا حسية محببة. اجعل النهاية دافئة ومقنعة، من غير خطبة ختامية أو عبارة مباشرة مثل: «وتعلم البطل أن…».
 
-الآيات والأحاديث — قاعدة قطعية
-- ستُزوَّد في رسالة الطلب بقائمة «المراجع الموثّقة» من الآيات والأحاديث الصحيحة لهذه القيمة.
-- لا يجوز لك الاستشهاد بأي آية أو حديث إطلاقًا إلا نصًّا واحدًا أو نصّين مأخوذين حرفيًا من تلك القائمة، بحروفهما كما وردت تمامًا.
-- يُمنَع منعًا باتًا: اختلاق آية أو حديث، أو الاستشهاد بنص من ذاكرتك غير موجود في القائمة، أو تعديل ألفاظ النص، أو دمج نصّين، أو نسبة قول إلى النبي ﷺ ليس في القائمة.
-- ضع النص في موضع طبيعي على لسان أم أو أب أو جد أو جدة أو معلم أو معلمة، يليه شرح قصير ومحِب يناسب الطفل دون تحويل المشهد إلى درس ديني.
-- إن لم يناسب أيٌّ من نصوص القائمة سياق القصة، فاذكر معنى القيمة بأسلوبك دون وضع أي نص بين علامتي تنصيص ودون نسبته إلى القرآن أو النبي ﷺ. جودة القصة وصدق النسبة أهم من حشو نص غير مناسب.
-- عند ذكر آية قل: «قال الله تعالى في كتابه».
+الآيات والأحاديث — قاعدة قطعية (سيتم التحقق آليًا)
+- سيُتحقَّق آليًا من كل آية مقابل نص المصحف الكامل، ومن كل حديث مقابل نصّي صحيح البخاري وصحيح مسلم. أي نص لا يُطابق المصدر بحروفه سيُرفض وتُعاد كتابة القصة.
+- الآية: يجوز أن تختار أي آية قصيرة مناسبة للقيمة، بشرط أن تكون من القرآن الكريم منقولةً بحروفها تمامًا دون أي تغيير أو نقص أو زيادة حرف.
+- الحديث: يجب أن يكون من صحيح البخاري أو صحيح مسلم حصرًا، منقولًا متنه بحروفه كما ورد. لا تستشهد بحديث من كتب أخرى ولو كان مشهورًا، ولا تنقل متنًا بالمعنى.
+- في رسالة الطلب ستجد قائمة «مراجع مقترحة موثّقة» مضمونة المطابقة؛ إن لم تكن على يقين تام من لفظ نص آخر، فاستعمل نصًّا من هذه القائمة.
+- يُمنَع منعًا باتًا: اختلاق آية أو حديث، أو تعديل الألفاظ، أو دمج نصّين، أو نسبة قول إلى النبي ﷺ ليس في الصحيحين.
+- ضع النص في موضع طبيعي على لسان أم أو أب أو جد أو جدة أو معلم أو معلمة، يليه شرح قصير ومحِب يناسب الطفل دون تحويل المشهد إلى درس ديني. عند ذكر آية قل: «قال الله تعالى في كتابه».
+- انسخ نص الآية التي استشهدت بها حرفيًا في الحقل "quran_ayah"، ونص متن الحديث حرفيًا في الحقل "hadith" (بلا إسناد وبلا «قال رسول الله ﷺ»)، مطابقًا تمامًا لما كتبته داخل القصة.
 
 القدوات الإسلامية
 يمكن إدخال إشارة قصيرة جدًا إلى نبي أو صحابي أو صحابية أو شخصية إسلامية موثوقة تتجلى فيها القيمة، بشرط أن:
@@ -75,6 +83,8 @@ export async function generateStory(req: StoryRequest): Promise<Story> {
   "story": "نص القصة كاملًا بالعربية، في فقرات قصيرة ومريحة للقراءة مفصولة بسطر فارغ",
   "moral": "سطر واحد رقيق يربط القيمة بأصلها الإسلامي والأخلاقي بلطف، غير وعظي",
   "key_scene": "وصف موجز بالعربية لأهم مشهد في القصة",
+  "quran_ayah": "نص الآية المستشهد بها حرفيًا كما وردت في القصة، أو نص فارغ إن لم تُستخدم آية",
+  "hadith": "متن الحديث المستشهد به حرفيًا (بلا إسناد وبلا: قال رسول الله ﷺ)، أو نص فارغ إن لم يُستخدم حديث",
   "image_prompt": "A detailed English description of the single most emotional moment of the story, set in a warm Muslim Arab family environment with modest clothing (mother in a graceful hijab where she appears). Describe: the child's appearance (age, hair, clothing colors), their exact expression and pose, the other characters, the setting with 3-4 specific background details, the light, and the mood. One moment only, no text in the image."
 }`;
 
@@ -89,22 +99,82 @@ ${buildReferenceBlock(req.value)}`;
   // نماذج gpt-5 و o-series لا تقبل درجة حرارة مخصصة
   const supportsTemperature = !/^(gpt-5|o\d)/.test(TEXT_MODEL);
 
-  const completion = await client.chat.completions.create({
-    model: TEXT_MODEL,
-    ...(supportsTemperature ? { temperature: 0.9 } : {}),
-    response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-  });
+  const messages: { role: "system" | "user"; content: string }[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ];
 
-  const raw = completion.choices[0]?.message?.content;
-  if (!raw) {
-    throw new Error("EMPTY_COMPLETION");
+  // نولّد القصة، ثم نتحقق آليًا من الآية والحديث. إن فشل التحقق نعيد المحاولة
+  // مرة واحدة مع توجيه تصحيحي، فإن استمر الفشل نُسقط الاستشهاد غير الموثّق
+  // بدل عرض نص غير محقّق.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const completion = await client.chat.completions.create({
+      model: TEXT_MODEL,
+      ...(supportsTemperature ? { temperature: 0.9 } : {}),
+      response_format: { type: "json_object" },
+      messages,
+    });
+
+    const raw = completion.choices[0]?.message?.content;
+    if (!raw) throw new Error("EMPTY_COMPLETION");
+
+    const model = storyModelSchema.parse(JSON.parse(raw));
+
+    const ayahMatch = model.quran_ayah.trim()
+      ? verifyVerse(model.quran_ayah)
+      : null;
+    const hadithMatch = model.hadith.trim() ? verifyHadith(model.hadith) : null;
+
+    const ayahFailed = model.quran_ayah.trim() !== "" && !ayahMatch;
+    const hadithFailed = model.hadith.trim() !== "" && !hadithMatch;
+
+    // إن فشل التحقق وما زال أمامنا محاولة، نطلب التصحيح
+    if ((ayahFailed || hadithFailed) && attempt === 0) {
+      const problems: string[] = [];
+      if (ayahFailed)
+        problems.push(
+          `الآية «${model.quran_ayah}» غير مطابقة لنص المصحف حرفيًا. استبدلها بآية أخرى منقولة بدقة تامة من القرآن (يُفضَّل من المراجع المقترحة).`
+        );
+      if (hadithFailed)
+        problems.push(
+          `الحديث «${model.hadith}» غير موجود بهذا اللفظ في صحيح البخاري أو مسلم. استبدله بحديث من الصحيحين منقول متنه بحروفه (يُفضَّل من المراجع المقترحة).`
+        );
+      messages.push({ role: "assistant", content: raw } as never);
+      messages.push({
+        role: "user",
+        content: `يجب تصحيح الاستشهاد ثم إعادة إخراج نفس القصة بصيغة JSON كاملة:\n- ${problems.join(
+          "\n- "
+        )}\nاحرص أن يتطابق نص "quran_ayah" و"hadith" مع ما تكتبه داخل القصة.`,
+      });
+      continue;
+    }
+
+    // بناء الاستشهادات الموثّقة فقط
+    const citations: Citation[] = [];
+    if (ayahMatch)
+      citations.push({
+        kind: "quran",
+        text: model.quran_ayah.trim(),
+        reference: ayahMatch.reference,
+      });
+    if (hadithMatch)
+      citations.push({
+        kind: "hadith",
+        text: model.hadith.trim(),
+        reference: hadithMatch.reference,
+      });
+
+    return {
+      title: model.title,
+      story: model.story,
+      moral: model.moral,
+      key_scene: model.key_scene,
+      image_prompt: model.image_prompt,
+      citations,
+    };
   }
 
-  return storySchema.parse(JSON.parse(raw));
+  throw new Error("VERIFICATION_FAILED");
 }
 
 const IMAGE_STYLE =

@@ -314,6 +314,24 @@ export default function GhirasApp() {
             {story.moral}
           </p>
 
+          {/* هوامش الاستشهادات الموثّقة */}
+          {story.citations.length > 0 && (
+            <div className="flex flex-col gap-2 rounded-2xl border border-line bg-page px-5 py-4">
+              <span className="text-sm font-bold text-ink-soft">
+                المراجع (مُتحقَّق منها)
+              </span>
+              {story.citations.map((c, i) => (
+                <p key={i} className="text-sm leading-relaxed text-ink-soft">
+                  <span className="text-ink">{c.text}</span>
+                  <span className="mx-1">—</span>
+                  <span className={c.kind === "quran" ? "text-grass" : "text-blue-deep"}>
+                    {c.reference}
+                  </span>
+                </p>
+              ))}
+            </div>
+          )}
+
           {/* الأزرار */}
           <div className="flex flex-wrap justify-center gap-3">
             <ActionButton onClick={copyStory}>
