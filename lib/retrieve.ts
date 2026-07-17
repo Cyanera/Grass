@@ -11,6 +11,10 @@ import type { ValueReference } from "./references";
  * تُحفظ النتيجة بعد ذلك في المكتبة الدائمة (عبر GitHub) لتصير فورية لاحقًا.
  */
 
+// نموذج خفيف وسريع للاسترجاع (مجرّد اقتراح مرشّحات يُتحقق منها لاحقًا)، حتى لا
+// يستهلك زمن المهلة قبل توليد القصة.
+const RETRIEVE_MODEL = process.env.OPENAI_RETRIEVE_MODEL ?? "gpt-4o-mini";
+
 type Candidates = { verses?: unknown[]; hadiths?: unknown[] };
 
 function asText(item: unknown): string | null {
@@ -24,12 +28,10 @@ function asText(item: unknown): string | null {
 
 export async function retrieveReferencesForValue(
   client: OpenAI,
-  model: string,
-  value: string,
-  supportsTemperature: boolean
+  value: string
 ): Promise<ValueReference> {
   const system = `أنت عالم متمكّن بالقرآن الكريم والسنة النبوية. سأعطيك قيمة تربوية للأطفال، فاذكر النصوص الشرعية الصحيحة المتعلقة بها مباشرة:
-- آيات قرآنية قصيرة (حتى ست آيات)، منقولة بلفظها الصحيح تمامًا دون خطأ.
+- آيات قرآنية قصيرة جدًا (حتى ست آيات)، منقولة بلفظها الصحيح تمامًا دون خطأ. اختر الأقصر والأنسب للأطفال.
 - أحاديث من صحيح البخاري أو صحيح مسلم فقط (حتى خمسة)، يُذكر متنها بحروفه بلا إسناد وبلا «قال رسول الله ﷺ».
 لا تخترع نصًّا، ولا تستشهد بحديث من غير الصحيحين، ولا تنقل بالمعنى. اختر ما يخصّ القيمة مباشرة لا ما هو عام.
 أعد الإجابة بصيغة JSON فقط: {"verses": ["..."], "hadiths": ["..."]}`;
@@ -37,8 +39,8 @@ export async function retrieveReferencesForValue(
   let parsed: Candidates = {};
   try {
     const res = await client.chat.completions.create({
-      model,
-      ...(supportsTemperature ? { temperature: 0.4 } : {}),
+      model: RETRIEVE_MODEL,
+      temperature: 0.4,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: system },

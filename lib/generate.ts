@@ -128,18 +128,10 @@ export async function generateStory(req: StoryRequest): Promise<Story> {
   "image_prompt": "A detailed English description of the single most emotional moment of the story, set in a warm Muslim Arab family environment with modest clothing (mother in a graceful hijab where she appears). Describe: the child's appearance (age, hair, clothing colors), their exact expression and pose, the other characters, the setting with 3-4 specific background details, the light, and the mood. One moment only, no text in the image."
 }`;
 
-  // نماذج gpt-5 و o-series لا تقبل درجة حرارة مخصصة
-  const supportsTemperature = !/^(gpt-5|o\d)/.test(TEXT_MODEL);
-
   // قيمة مخصّصة جديدة: نسترجع مراجعها ونتحقق منها لحظيًا، ثم نحفظها دائمًا.
   let dynamic: ValueReference | undefined;
   if (!isKnownValue(req.value)) {
-    dynamic = await retrieveReferencesForValue(
-      client,
-      TEXT_MODEL,
-      req.value,
-      supportsTemperature
-    );
+    dynamic = await retrieveReferencesForValue(client, req.value);
     if (dynamic.verses.length || dynamic.hadiths.length) {
       // حفظ دائم في المكتبة عبر GitHub (لا يعطّل توليد القصة عند الفشل)
       void saveLearnedValue(req.value, dynamic);
