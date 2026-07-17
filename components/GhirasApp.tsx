@@ -17,7 +17,7 @@ const GOLD = { on: "border-gold bg-gold text-ink font-bold", off: "bg-white bord
 const BLUE = { on: "border-blue-deep bg-blue-deep text-white font-bold", off: "bg-white border-blue/50 hover:bg-blue/10" };
 const ROSE = { on: "border-rose-deep bg-rose-deep text-white font-bold", off: "bg-white border-rose/50 hover:bg-rose/10" };
 
-const VALUE_STYLES = [GOLD, BLUE, ROSE, GOLD, BLUE, ROSE, GOLD, BLUE];
+const PALETTE = [GOLD, BLUE, ROSE];
 const AGE_STYLES = [GOLD, BLUE, ROSE];
 
 const CUSTOM = "__custom__";
@@ -182,7 +182,7 @@ export default function GhirasApp() {
               <label
                 key={v}
                 className={`cursor-pointer rounded-full border-2 px-4 py-2 text-sm font-medium transition sm:text-base ${
-                  value === v ? VALUE_STYLES[i].on : VALUE_STYLES[i].off
+                  value === v ? PALETTE[i % 3].on : PALETTE[i % 3].off
                 }`}
               >
                 <input
