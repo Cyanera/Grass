@@ -8,10 +8,15 @@
  * أو الصحيحين، وكل ما يختاره يُتحقق منه آليًا قبل عرضه.
  */
 
+import learnedData from "./learned-references.json";
+
 export type ValueReference = {
   verses: string[];
   hadiths: string[];
 };
+
+// القيم المتعلَّمة تلقائيًا والمحفوظة في المكتبة (تُضاف عبر GitHub وقت التشغيل).
+const LEARNED = learnedData as Record<string, ValueReference>;
 
 const REFERENCES: Record<string, ValueReference> = {
   الصدق: {
@@ -224,10 +229,24 @@ function shuffle<T>(arr: T[]): T[] {
  * يبني كتلة نصية بالمراجع المقترحة الموثّقة لهذه القيمة، مع تدوير عشوائي في
  * كل طلب لمنع تكرار النص نفسه بين القصص.
  */
-export function buildReferenceBlock(value: string): string {
-  const known = REFERENCES[value.trim()];
-  const verses = [...shuffle(known?.verses ?? []), ...shuffle(GENERAL_BANK.verses)];
-  const hadiths = [...shuffle(known?.hadiths ?? []), ...shuffle(GENERAL_BANK.hadiths)];
+/** هل القيمة موجودة في المكتبة (الجاهزة أو المتعلَّمة)؟ وإلا فهي تحتاج استرجاعًا. */
+export function isKnownValue(value: string): boolean {
+  const key = value.trim();
+  return !!(REFERENCES[key] || LEARNED[key]);
+}
+
+export function buildReferenceBlock(
+  value: string,
+  dynamic?: ValueReference
+): string {
+  const key = value.trim();
+  const known = REFERENCES[key] ?? LEARNED[key];
+  // للقيم المعروفة نستخدم مراجعها؛ وللقيم المخصّصة نستخدم المراجع المسترجَعة
+  // والمُتحقَّقة لحظيًا (إن وُجدت)، مع البنك العام في الحالتين.
+  const baseVerses = known?.verses ?? dynamic?.verses ?? [];
+  const baseHadiths = known?.hadiths ?? dynamic?.hadiths ?? [];
+  const verses = [...shuffle(baseVerses), ...shuffle(GENERAL_BANK.verses)];
+  const hadiths = [...shuffle(baseHadiths), ...shuffle(GENERAL_BANK.hadiths)];
 
   const versesList = verses.map((v) => `  - ${v}`).join("\n");
   const hadithsList = hadiths.map((h) => `  - ${h}`).join("\n");
