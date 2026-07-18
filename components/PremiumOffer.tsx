@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { PRODUCTS, formatSar, type ProductId } from "@/lib/products";
+import { PRODUCTS, sarNumber, type ProductId } from "@/lib/products";
+import Riyal from "./Riyal";
 
 type StoryInput = {
   title: string;
@@ -132,8 +133,9 @@ export default function PremiumOffer({ story }: { story: StoryInput }) {
                 <span className="font-bold">{p.title}</span>
                 <span className="text-sm text-ink-soft">{p.description}</span>
               </span>
-              <span className="shrink-0 rounded-full bg-blue-soft px-3 py-1 font-bold text-blue-deep">
-                {formatSar(p.amount)}
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-blue-soft px-3 py-1 font-bold text-blue-deep">
+                {sarNumber(p.amount)}
+                <Riyal />
               </span>
             </button>
           );

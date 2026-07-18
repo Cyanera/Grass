@@ -10,6 +10,13 @@ const baloo = localFont({
   display: "swap",
 });
 
+/* خط رمز الريال السعودي الرسمي (الرمز عند U+E900) */
+const riyal = localFont({
+  src: [{ path: "./fonts/SaudiRiyal.woff2", weight: "400" }],
+  variable: "--font-riyal",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://ghiras.kids"),
   title: "غِراس — قصصٌ تُروى، وقيمٌ تُغرس",
@@ -28,7 +35,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ar" dir="rtl" className={baloo.variable}>
+    <html lang="ar" dir="rtl" className={`${baloo.variable} ${riyal.variable}`}>
       <body className="font-sans antialiased">
         {children}
         <Analytics />
