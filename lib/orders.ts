@@ -41,7 +41,7 @@ export type NewOrder = Pick<Order, "productId" | "email" | "story"> & {
   photo?: string;
 };
 
-interface OrderStore {
+export interface OrderStore {
   create(input: NewOrder): Promise<Order>;
   get(id: string): Promise<Order | null>;
   update(id: string, patch: Partial<Order>): Promise<Order | null>;
@@ -75,4 +75,17 @@ class MemoryOrderStore implements OrderStore {
   }
 }
 
-export const orderStore: OrderStore = new MemoryOrderStore();
+// اختيار المخزن: Supabase الدائم إن ضُبطت متغيّراته، وإلا مخزن الذاكرة للتطوير.
+function selectStore(): OrderStore {
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    // تحميل ديناميكي حتى لا تُطلب مكتبة Supabase في التطوير المحلي بلا إعداد.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { supabaseOrderStore } = require("./orders-supabase") as {
+      supabaseOrderStore: OrderStore;
+    };
+    return supabaseOrderStore;
+  }
+  return new MemoryOrderStore();
+}
+
+export const orderStore: OrderStore = selectStore();
